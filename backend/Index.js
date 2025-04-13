@@ -11,7 +11,10 @@ const app = express();
 const db  = "mongodb+srv://unnati:unnati12345@cluster0.m35bgfm.mongodb.net/userinfo?retryWrites=true&w=majority&appName=Cluster0";
 dotenv.config();
 app.use(bodyParser.json());
-app.use(cors());
+app.use(cors({
+    origin: ["https://userauth-7gpr.vercel.app"],
+    credentials: true
+  }));
 app.listen(PORT,()=>{
     console.log(`${PORT} is connect`)
 })
