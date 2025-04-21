@@ -72,27 +72,62 @@ export const checkdata =  async(req,res)=>{
 
 
 export const updateProfile = async (req, res) => {
-  try {
-    const userId = req.user._id;
-    const { username, bio, picture, email, password } = req.body;
-
-    const updates = { username, bio, picture, email };
-
-    if (password) {
-      updates.password = await bcryptjs.hash(password, 10);
-    }
-
-    const updatedUser = await UserModel.findByIdAndUpdate(userId, updates, { new: true,runValidators: true });
-    if (!updatedUser) {
+    try {
+      const userId = req.user._id;
+      const { fname,lname   ,picture, email, password } = req.body;
+  
+      // Construct the updates object
+      const updates = {};
+  
+      // Update UserName fields
+ 
+        if (fname) updates.fname = fname;
+        if (lname) updates.lname = lname;
+    
+  
+      
+      // Update other fields
+      
+      if (email) updates.email = email;
+      if (req.file) {
+        updates.picture = req.file.filename; // or req.file.path if needed
+      }
+      // If password is provided, hash it before updating
+      if (password) {
+        updates.password = await bcryptjs.hash(password, 10);
+      }
+  
+      // Update user in the database
+      const updatedUser = await UserModel.findByIdAndUpdate(userId, updates, { new: true, runValidators: true });
+  
+      // Check if the user exists
+      if (!updatedUser) {
         return res.status(404).json({ message: "User not found", success: false });
       }
-    res.status(200).json({
-      message: "Profile updated successfully",
-      success: true,
-      user: updatedUser
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server Error", success: false });
-  }
-};
+  
+      const { password: _, ...userWithoutPassword } = updatedUser._doc;
+      // Respond with the updated user data
+      res.status(200).json({
+        message: "Profile updated successfully",
+        success: true,
+        user: userWithoutPassword,
+
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Server Error", success: false });
+    }
+  };
+
+  export const getProfile = async (req, res) => {
+    try {
+        const userId = req.user._id;
+      console.log("User in req:", req.UserModel); // ✅ from JWT middleware
+      const user = await UserModel.findById(userId);
+      res.json({ user });
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      res.status(500).json({ message: "Server error" });
+    }
+  };
+  

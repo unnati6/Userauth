@@ -12,7 +12,7 @@ function Login() {
    const navigate = useNavigate();
     const validationSchema = Yup.object().shape({
         email:Yup.string().email().required("Email is required"),
-        password:Yup.string().required("Password is required").min(8,'Password must be atleast 8 characters').max(10,'Password must be atmost 10 characters')
+        password:Yup.string().required("Password is required").min(6,'Password must be atleast 6 characters').max(10,'Password must be atmost 10 characters')
         
     })
     const formik = useFormik({
@@ -30,7 +30,7 @@ function Login() {
                 localStorage.setItem('token',response.data.jwttoken)
                 setUser(response.data.user)
                 setTimeout(() => {
-                    navigate(`/user/${response.data.user.username}/${response.data.user._id}`);
+                    navigate(`/user/${response.data.user.fname}/${response.data.user._id}`);
 
                 },2000);
                 
@@ -63,15 +63,18 @@ function Login() {
     })
   return (
     <>
-    <div className='main-container'>
-        <h1>Login</h1>
-        <form onSubmit={formik.handleSubmit}>
-            <div>
+    <div className='main-container-login'>
+    <div className='head-container'>
+            <h1 className='title'>Login</h1>
+            <h1 className='subtitle'>Enter your details below to login</h1>
+        </div>
+        <form onSubmit={formik.handleSubmit} className='form-container-login'>
+            <div className='div1'>
                 <label htmlFor='email'>Email</label>
                 <input 
                     type="email"
                     name="email"
-                    placeholder='Enter Email'
+                    placeholder='team@mynaui.com'
                     autoFocus
                     onChange={formik.handleChange}
                     value={formik.values.email}
@@ -84,12 +87,12 @@ function Login() {
             
             </div>
 
-            <div>
+            <div className='div2'>
                 <label htmlFor='password'>Password</label>
                 <input 
                     type="password"
                     name="password"
-                    placeholder='Enter password'
+                    placeholder='••••••••••'
                     onChange={formik.handleChange}
                     value={formik.values.password}
                     
@@ -101,12 +104,21 @@ function Login() {
               </div>
             </div>
 
-            <button type='submit' >Login</button>
-            <span className="reg-span">Not a Member ?
-                <Link className="reg-link" to="/signup"> Signup</Link>
-            </span>
+            <button type='submit' className='submit-data'>Login</button>
+            <button type='submit' className='submit-data2'>Login with Google</button>            
            
         </form>
+        <div className='FORGETLINK'>
+        <span className="reg-span1">Don't have an account?
+                <Link className="reg-link" to="/signup">  Sign up</Link>
+            </span>
+            <span className="reg-span2">
+            <Link className="reg-link" to="/forget">Forgot your password?</Link>
+    
+            </span>
+              
+        </div>
+        
         <ToastContainer 
         position="top-right"
         autoClose={2000}

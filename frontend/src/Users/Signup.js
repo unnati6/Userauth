@@ -9,18 +9,21 @@ function Signup() {
    const navigate = useNavigate();
     const validationSchema = Yup.object().shape({
         email:Yup.string().email().required("Email is required"),
-        password:Yup.string().required("Password is required").min(8,'Password must be atleast 8 characters').max(10,'Password must be atmost 10 characters')
-        
+        password:Yup.string().required("Password is required").min(6,'Must be atleast 6 characters long').max(10,'Password must be atmost 10 characters'),
+        confirmPassword: Yup.string()
+    .required("Confirm Password is required")
+    .oneOf([Yup.ref('password'), null], "Passwords must match")
     })
     const formik = useFormik({
         initialValues:{
             email:"",
-            password:""
+            password:"",
+            confirmPassword:""
         },
         validationSchema,
         onSubmit: async(values)=>{
-
-             await registerUser(values)
+            const { confirmPassword, ...dataToSubmit } = values;
+             await registerUser(dataToSubmit)
              .then(response=>{
                 console.log(response);
                 toast.success(response.data.message);
@@ -54,9 +57,12 @@ function Signup() {
   return (
     <>
     <div className='main-container'>
-        <h1>Signup</h1>
-        <form onSubmit={formik.handleSubmit}>
-            <div>
+        <div className='head-container'>
+            <h1 className='title'>Create an account</h1>
+            <h1 className='subtitle'>Get started with MynaUI today</h1>
+        </div>
+        <form onSubmit={formik.handleSubmit} className='form-container'>
+            <div className='div1'>
                 <label htmlFor='email'>Email</label>
                 <input 
                     type="email"
@@ -74,16 +80,17 @@ function Signup() {
             
             </div>
 
-            <div>
-                <label htmlFor='password'>Password</label>
+            <div className='div2'>
+                <label htmlFor='password'>New Password</label>
                 <input 
                     type="password"
                     name="password"
-                    placeholder='Enter password'
+                    placeholder='••••••••••'
                     onChange={formik.handleChange}
                     value={formik.values.password}
                     
-                />   
+                />  
+                <p>Must be at least 6 characters long.</p> 
                  <div className="invalid-feedback">
                 {formik.errors.password && formik.touched.password
                   ? formik.errors.password
@@ -91,11 +98,28 @@ function Signup() {
               </div>
             </div>
 
-            <button type='submit' >Signup</button>
-            <span className="reg-span">Already have account ? 
+            <div className='div3'>
+  <label htmlFor='confirmPassword'>Confirm Password</label>
+  <input 
+    type="password"
+    name="confirmPassword"
+    placeholder='••••••••••'
+    onChange={formik.handleChange}
+    value={formik.values.confirmPassword}
+  />
+  {/* <div className="invalid-feedback">
+    {formik.errors.confirmPassword && formik.touched.confirmPassword
+      ? formik.errors.confirmPassword
+      : null}
+  </div> */}
+</div>
+
+            <button type='submit'className='submit-data' >Create Account →</button>
+            
+        </form>
+        <span className="reg-span">Already have account ? 
                 <Link className="reg-link" to="/login"> Login</Link>
             </span>
-        </form>
         <ToastContainer 
         position="top-right"
         autoClose={2000}
