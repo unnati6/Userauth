@@ -15,7 +15,11 @@ const __dirname = path.dirname(__filename);
 const db  = "mongodb+srv://unnati:unnati12345@cluster0.m35bgfm.mongodb.net/userinfo?retryWrites=true&w=majority&appName=Cluster0";
 dotenv.config();
 app.use(bodyParser.json());
-app.use(cors());
+const corsOptions = {
+    origin: ['https://userauth-7gpr.vercel.app'], // yaha apne frontend ka URL daalo
+    credentials: true,
+  };
+app.use(cors(corsOptions));
 app.listen(PORT,()=>{
     console.log(`${PORT} is connect`)
 })
@@ -30,7 +34,6 @@ mongoose.connect(db)
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use(bodyParser.json());
-app.use(cors());
 app.use('/auth',router);
 app.use('/links',linkRouter)
 app.use('/bio',bioRouter)
